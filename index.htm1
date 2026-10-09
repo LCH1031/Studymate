@@ -1,0 +1,847 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyMate</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#20283a;--muted:#81899b;--line:#e9edf4;--primary:#6378ee;--soft:#eef0ff;--green:#27a879;--orange:#ed9b49;--radius:18px}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;font-size:14px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{width:min(100%,760px);margin:auto;padding:20px 15px 45px}
+header{display:flex;justify-content:space-between;align-items:center;margin:4px 0 20px}
+.logo{font-size:24px;font-weight:850;letter-spacing:-1px}
+.logo span{color:var(--primary)}
+.small{color:var(--muted);font-size:12px}
+h2{font-size:18px;margin:0 0 15px}
+h3{font-size:15px;margin:0}
+p{line-height:1.6}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px;min-width:0}
+.hero{background:#6679ed;color:white;border:none;padding:22px}
+.hero .small{color:#e0e5ff}
+.hero-number{font-size:30px;font-weight:800;margin:10px 0 4px}
+.hero-bottom{display:flex;gap:25px;margin-top:18px}
+.hero-bottom strong{display:block;font-size:16px;margin-top:5px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.stat{background:#f8f9fd;border-radius:13px;padding:13px 10px;min-width:0}
+.stat strong{display:block;font-size:19px;margin-top:7px;overflow-wrap:anywhere}
+.stat .small{line-height:1.5}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:15px}
+.field{margin-bottom:12px}
+.date-parts{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:8px}
+.date-parts input{min-width:0}
+input[readonly]{background:#f5f6fa;color:#697286;cursor:default}
+label{display:block;color:#606a7e;font-size:12px;margin-bottom:7px}
+input,select{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:11px;background:white;color:var(--text);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--primary)}
+button.primary,button.secondary,button.danger,button.chip{border:none;border-radius:11px;padding:11px 14px;font-weight:700}
+button.primary{background:var(--primary);color:white}
+button.secondary{background:var(--soft);color:var(--primary)}
+button.danger{background:#fff0f0;color:#c85050}
+button.chip{background:#f1f3f8;color:#667085;padding:8px 11px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.full{width:100%}
+.row{display:flex;align-items:center;gap:9px}
+.row>*{min-width:0}
+.row .grow{flex:1}
+.wrap{flex-wrap:wrap}
+.timer{text-align:center;padding:13px 0 18px}
+.timer-time{font-size:clamp(40px,12vw,58px);font-weight:800;letter-spacing:-2px;font-variant-numeric:tabular-nums;margin:12px 0}
+.timer-subject{color:var(--muted);margin-bottom:8px}
+.timer-controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
+.list{display:flex;flex-direction:column}
+.item{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:none}
+.item-main{flex:1;min-width:0}
+.item-title{font-weight:700;overflow-wrap:anywhere}
+.item-meta{font-size:12px;color:var(--muted);margin-top:5px}
+.item-time{font-weight:750;white-space:nowrap}
+.check{width:19px;height:19px;accent-color:var(--primary);flex-shrink:0}
+.empty{color:var(--muted);text-align:center;padding:23px 8px;line-height:1.7}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:15px;padding-bottom:3px}
+.tab{flex:1;white-space:nowrap;border:1px solid var(--line);border-radius:11px;padding:11px 8px;color:#697286;background:white;font-weight:700}
+.tab.active{background:var(--soft);border-color:#dfe3ff;color:var(--primary)}
+.page{display:none}
+.page.active{display:block}
+.bar-row{margin:15px 0}
+.bar-label{display:flex;justify-content:space-between;gap:8px;margin-bottom:7px}
+.bar-track{height:8px;background:#eef0f5;border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;background:var(--primary);border-radius:20px}
+.calendar-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:8px}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.weekday{text-align:center;color:var(--muted);font-size:11px;padding:5px 0 9px}
+.day{min-height:66px;padding:6px 2px;border:1px solid transparent;border-radius:10px;background:#f8f9fc;text-align:center;color:var(--text);display:flex;flex-direction:column;align-items:center;gap:5px}
+.day.blank{background:transparent}
+.day.today{border-color:var(--primary)}
+.day.selected{background:var(--soft);border-color:var(--primary)}
+.day-num{font-size:12px}
+.day-hours{font-size:10px;color:var(--primary);font-weight:750}
+.day-dot{width:5px;height:5px;background:var(--green);border-radius:50%}
+.calendar-note{margin-top:13px}
+details{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+summary{cursor:pointer;font-weight:700}
+.history-body{padding-top:8px}
+.memo-input{width:100%;min-height:66px;resize:vertical;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--text);outline:none}
+.timer-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:stretch}
+.timer-layout .card{padding:12px 9px;margin-bottom:14px}
+.timer-layout h2{font-size:15px;line-height:1.4;min-height:38px}
+.timer-layout .timer-time{font-size:clamp(25px,7vw,38px);letter-spacing:-1px;white-space:nowrap}
+.timer-layout .timer-controls{gap:5px}
+.timer-layout .timer-controls button{padding:9px 7px;font-size:12px}
+.timer-layout input{padding:10px 8px}
+textarea{width:100%;min-height:64px;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit;color:var(--text)}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 0}
+@media(max-width:380px){
+.app{padding:15px 10px 35px}
+.card{padding:14px}
+.day{min-height:57px}
+.day-hours{font-size:9px}
+.grid3{gap:6px}
+.stat strong{font-size:16px}
+.timer-layout{gap:7px}
+.timer-layout .card{padding:10px 7px}
+.timer-layout .timer-controls{gap:4px}
+.timer-layout .timer-controls button{padding:8px 5px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div>
+<div class="logo">Study<span>Mate</span></div>
+<div class="small">나만의 공부 관리 공간</div>
+</div>
+<div id="todayLabel" class="small"></div>
+</header>
+
+<section class="card hero">
+<div class="small">오늘의 공부 시간</div>
+<div class="hero-number" id="todayTotal">0시간 0분</div>
+<div class="small">조금씩 쌓이는 오늘의 노력</div>
+<div class="hero-bottom">
+<div><div class="small">공부 기록</div><strong id="todayCount">0개</strong></div>
+<div><div class="small">완료한 할 일</div><strong id="doneCount">0개</strong></div>
+</div>
+</section>
+
+<nav class="tabs" aria-label="주요 메뉴">
+<button type="button" class="tab active" data-page="home">홈</button>
+<button type="button" class="tab" data-page="records">전체 기록</button>
+<button type="button" class="tab" data-page="calendar">달력</button>
+<button type="button" class="tab" data-page="stats">통계</button>
+</nav>
+
+<main>
+<div id="page-home" class="page active">
+<div class="timer-layout">
+<section class="card">
+<h2>⏱️ 스톱워치</h2>
+<div class="field"><label for="stopwatchSubject">공부 과목</label><input id="stopwatchSubject" maxlength="40" placeholder="예: 수학"></div>
+<div class="timer">
+<div id="stopwatchState" class="timer-subject">공부할 준비가 됐나요?</div>
+<div id="stopwatchDisplay" class="timer-time">00:00:00</div>
+<div class="timer-controls">
+<button type="button" id="startStopwatch" class="primary">시작</button>
+<button type="button" id="pauseStopwatch" class="secondary" disabled>일시정지</button>
+<button type="button" id="stopStopwatch" class="secondary" disabled>완료·저장</button>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>⏳ 카운트다운 타이머</h2>
+<div class="field"><label for="timerSubject">공부 과목</label><input id="timerSubject" maxlength="40" placeholder="예: 영어"></div>
+<div class="grid2">
+<div class="field"><label for="timerHours">시간</label><input id="timerHours" type="number" min="0" max="23" value="0"></div>
+<div class="field"><label for="timerMinutes">분</label><input id="timerMinutes" type="number" min="0" max="59" value="30"></div>
+</div>
+<div class="timer">
+<div id="timerState" class="timer-subject">목표 시간을 설정해 봐!</div>
+<div id="timerDisplay" class="timer-time">30:00</div>
+<div class="timer-controls">
+<button type="button" id="startTimer" class="primary">시작</button>
+<button type="button" id="pauseTimer" class="secondary" disabled>일시정지</button>
+<button type="button" id="stopTimer" class="secondary" disabled>종료·저장</button>
+</div>
+</div>
+</section>
+</div>
+
+<section class="card">
+<h2>✍️ 공부 시간 직접 기록</h2>
+<form id="recordForm">
+<div class="field"><label for="recordSubject">과목</label><input id="recordSubject" maxlength="40" placeholder="예: 영어" required></div>
+<div class="grid2">
+<div class="field"><label for="recordHours">시간</label><input id="recordHours" type="number" min="0" max="999" value="1" required></div>
+<div class="field"><label for="recordMinutes">분 (0~59)</label><input id="recordMinutes" type="number" min="0" max="59" value="0" required></div>
+</div>
+<div class="field">
+<label>공부한 날짜 (오늘 날짜로 자동 설정)</label>
+<div class="date-parts">
+<input id="recordDateYear" type="number" readonly placeholder="년도" aria-label="공부 날짜 년도">
+<input id="recordDateMonth" type="number" readonly placeholder="월" aria-label="공부 날짜 월">
+<input id="recordDateDay" type="number" readonly placeholder="일" aria-label="공부 날짜 일">
+</div>
+<input id="recordDate" type="hidden">
+</div>
+<button class="primary full" type="submit">공부 기록 저장</button>
+</form>
+</section>
+
+<section class="card">
+<div class="section-title"><h2 style="margin:0">오늘의 공부 기록</h2><button type="button" class="chip" onclick="switchPage('records')">전체 보기 →</button></div>
+<div id="homeRecords" class="list"></div>
+</section>
+
+<section class="card">
+<h2>☑️ 할 일</h2>
+<form id="todoForm" class="row">
+<input id="todoInput" class="grow" maxlength="120" placeholder="오늘 할 일 입력" required>
+<button class="primary" type="submit">추가</button>
+</form>
+<div id="todoList" class="list"></div>
+</section>
+
+<section class="card">
+<h2>📅 시험 D-day</h2>
+<form id="examForm">
+<div class="field"><label for="examName">시험 이름</label><input id="examName" maxlength="80" placeholder="예: 2학기 중간고사" required></div>
+<div class="field">
+<label>시험 날짜 (년도 → 월 → 일)</label>
+<div class="date-parts">
+<input id="examDateYear" type="number" inputmode="numeric" min="1900" max="2200" placeholder="년도" aria-label="시험 날짜 년도" required>
+<input id="examDateMonth" type="number" inputmode="numeric" min="1" max="12" placeholder="월" aria-label="시험 날짜 월" required>
+<input id="examDateDay" type="number" inputmode="numeric" min="1" max="31" placeholder="일" aria-label="시험 날짜 일" required>
+</div>
+<input id="examDate" type="hidden">
+</div>
+<button class="primary full" type="submit">시험 추가</button>
+</form>
+<div id="examList" class="list"></div>
+</section>
+
+<section class="card">
+<div class="section-title"><h2 style="margin:0">✅ 완료된 일</h2></div>
+<p class="small">완료한 할 일과 지난 시험이 여기에 기록돼. 각 항목에 소감이나 메모를 남길 수 있어.</p>
+<div id="completedList" class="list"></div>
+</section>
+</div>
+
+<div id="page-records" class="page">
+<section class="card">
+<h2>📚 전체 공부 기록</h2>
+<div class="grid2">
+<div class="stat"><div class="small">누적 공부 시간</div><strong id="allTotal">0분</strong></div>
+<div class="stat"><div class="small">공부한 날짜</div><strong id="allDays">0일</strong></div>
+</div>
+<div class="row wrap" style="margin-top:15px">
+<div class="grow"><label for="filterSubject">과목 필터</label><select id="filterSubject"><option value="">모든 과목</option></select></div>
+<div class="grow"><label for="filterMonth">월별 필터</label><input id="filterMonth" type="month"></div>
+</div>
+<div class="row" style="margin-top:5px">
+<button type="button" id="clearFilters" class="chip">필터 초기화</button>
+<div id="recordResultCount" class="small" style="margin-left:auto"></div>
+</div>
+<div id="allRecords" class="list" style="margin-top:10px"></div>
+</section>
+</div>
+
+<div id="page-calendar" class="page">
+<section class="card">
+<div class="calendar-head">
+<button type="button" class="chip" id="prevMonth" aria-label="이전 달">←</button>
+<h2 id="calendarTitle" style="margin:0">달력</h2>
+<button type="button" class="chip" id="nextMonth" aria-label="다음 달">→</button>
+</div>
+<div class="calendar-grid" id="calendarGrid"></div>
+<p class="small calendar-note">공부한 날짜를 선택하면 그날의 기록을 확인할 수 있어.</p>
+</section>
+<section class="card">
+<div class="section-title"><h2 id="selectedDateTitle" style="margin:0">선택한 날짜</h2><strong id="selectedDateTotal"></strong></div>
+<div id="selectedDateRecords" class="list"></div>
+</section>
+</div>
+
+<div id="page-stats" class="page">
+<section class="card">
+<h2>📊 나의 공부 통계</h2>
+<div class="grid2">
+<div class="stat"><div class="small">누적 공부 시간</div><strong id="statTotal">0분</strong></div>
+<div class="stat"><div class="small">공부한 날짜</div><strong id="statDays">0일</strong></div>
+<div class="stat"><div class="small">공부 기록 수</div><strong id="statEntries">0개</strong></div>
+<div class="stat"><div class="small">하루 평균</div><strong id="statAverage">0분</strong></div>
+</div>
+</section>
+<section class="card"><h2>과목별 누적 시간</h2><div id="subjectStats"></div></section>
+<section class="card"><h2>최근 7일 공부 시간</h2><div id="weeklyStats"></div></section>
+</div>
+</main>
+<footer>StudyMate · 오늘의 노력이 내일의 실력이 되도록</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const today = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+const makeId = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const read = (key, fallback=[]) => {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
+  catch { return fallback; }
+};
+
+let records = read('studymate_records_v2');
+let todos = read('studymate_todos_v2');
+let exams = read('studymate_exams_v2');
+let completed = read('studymate_completed_v2');
+
+const save = () => {
+  localStorage.setItem('studymate_records_v2', JSON.stringify(records));
+  localStorage.setItem('studymate_todos_v2', JSON.stringify(todos));
+  localStorage.setItem('studymate_exams_v2', JSON.stringify(exams));
+  localStorage.setItem('studymate_completed_v2', JSON.stringify(completed));
+};
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+const mins = n => {
+  n = Math.max(0, Math.floor(n || 0));
+  return n >= 60 ? `${Math.floor(n/60)}시간 ${n%60}분` : `${n}분`;
+};
+
+const duration = r => Math.max(0, Number(r.minutes) || 0);
+const dateLabel = d => d ? d.replaceAll('-','. ') : '';
+
+function addRecord(subject, minutes, date=today()) {
+  minutes = Math.floor(Number(minutes) || 0);
+  if (minutes <= 0) return false;
+  records.push({id:makeId(),subject:subject.trim() || '공부',minutes,date,created:Date.now()});
+  save();
+  render();
+  return true;
+}
+
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active',b.dataset.page===name));
+  const page = $('page-'+name);
+  if (page) page.classList.add('active');
+  render();
+}
+
+document.querySelectorAll('.tab').forEach(b => b.addEventListener('click',()=>switchPage(b.dataset.page)));
+
+function renderRecords(list, target, deletable=true) {
+  const el = $(target);
+  if (!list.length) {
+    el.innerHTML='<div class="empty">아직 기록이 없어.<br>공부를 시작하고 기록을 추가해 봐!</div>';
+    return;
+  }
+  el.innerHTML = list.map(r => `
+    <div class="item">
+      <div class="item-main">
+        <div class="item-title">${esc(r.subject)}</div>
+        <div class="item-meta">${esc(dateLabel(r.date))}</div>
+      </div>
+      <div class="item-time">${mins(duration(r))}</div>
+      ${deletable?`<button class="chip" data-delete-record="${esc(r.id)}" aria-label="기록 삭제">삭제</button>`:''}
+    </div>`).join('');
+}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-delete-record]');
+  if (!b) return;
+  if (!confirm('이 공부 기록을 삭제할까?')) return;
+  records=records.filter(r=>r.id!==b.dataset.deleteRecord);
+  save();
+  render();
+});
+
+$('recordForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const subject=$('recordSubject').value.trim();
+  const h=Number($('recordHours').value), m=Number($('recordMinutes').value);
+  if (!subject || !Number.isInteger(h) || !Number.isInteger(m) || h<0 || h>999 || m<0 || m>59 || h*60+m<=0) {
+    alert('과목과 올바른 공부 시간을 입력해 줘.');
+    return;
+  }
+  if(addRecord(subject,h*60+m)) {
+    $('recordForm').reset();
+    $('recordHours').value=1;
+    $('recordMinutes').value=0;
+    alert('공부 기록을 저장했어!');
+  }
+});
+
+let sw={running:false,started:0,elapsed:0};
+let timer={running:false,started:0,remaining:1800000,initial:1800000,subject:''};
+
+function fmtClock(ms) {
+  const s=Math.floor(ms/1000);
+  return `${String(Math.floor(s/3600)).padStart(2,'0')}:${String(Math.floor(s%3600/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
+
+function fmtTimer(ms) {
+  const s=Math.ceil(Math.max(0,ms)/1000);
+  return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+}
+
+function swElapsed(){return sw.elapsed+(sw.running?Date.now()-sw.started:0);}
+function timerLeft(){return Math.max(0,timer.remaining-(timer.running?Date.now()-timer.started:0));}
+
+function updateTimers(){
+  $('stopwatchDisplay').textContent=fmtClock(swElapsed());
+  $('timerDisplay').textContent=fmtTimer(timerLeft());
+}
+
+function updateSwButtons(){
+  $('startStopwatch').disabled=sw.running;
+  $('pauseStopwatch').disabled=!sw.running;
+  $('stopStopwatch').disabled=swElapsed()<=0;
+}
+
+$('startStopwatch').addEventListener('click',()=>{
+  if(sw.running)return;
+  sw.running=true;
+  sw.started=Date.now();
+  $('stopwatchState').textContent='공부 중';
+  updateSwButtons();
+});
+
+$('pauseStopwatch').addEventListener('click',()=>{
+  if(!sw.running)return;
+  sw.elapsed+=Date.now()-sw.started;
+  sw.running=false;
+  $('stopwatchState').textContent='일시정지';
+  updateSwButtons();
+  updateTimers();
+});
+
+$('stopStopwatch').addEventListener('click',()=>{
+  if(sw.running){
+    sw.elapsed+=Date.now()-sw.started;
+    sw.running=false;
+  }
+  const total=Math.floor(sw.elapsed/60000);
+  if(total>0){
+    if(addRecord($('stopwatchSubject').value||'공부',total)) alert(`${mins(total)} 공부 기록을 저장했어!`);
+  } else alert('1분 이상 공부하면 기록을 저장할 수 있어.');
+  sw={running:false,started:0,elapsed:0};
+  $('stopwatchState').textContent='공부할 준비가 됐나요?';
+  updateSwButtons();
+  updateTimers();
+});
+
+function setTimerButtons(){
+  $('startTimer').disabled=timer.running;
+  $('pauseTimer').disabled=!timer.running;
+  $('stopTimer').disabled=timer.remaining===timer.initial&&!timer.running;
+}
+
+function syncTimerInputs(){
+  const h=Number($('timerHours').value),m=Number($('timerMinutes').value);
+  if(!Number.isInteger(h)||!Number.isInteger(m)||h<0||h>23||m<0||m>59)return false;
+  const ms=(h*60+m)*60000;
+  if(ms<=0){alert('타이머 시간을 1분 이상 설정해 줘.');return false;}
+  timer.remaining=ms;
+  timer.initial=ms;
+  timer.subject=$('timerSubject').value.trim()||'공부';
+  return true;
+}
+
+$('startTimer').addEventListener('click',()=>{
+  if(timer.running)return;
+  if(timer.remaining===timer.initial){
+    if(!syncTimerInputs())return;
+  }
+  if(timer.remaining<=0){alert('시간을 다시 설정해 줘.');return;}
+  timer.running=true;
+  timer.started=Date.now();
+  $('timerState').textContent='집중하는 중!';
+  setTimerButtons();
+});
+
+$('pauseTimer').addEventListener('click',()=>{
+  if(!timer.running)return;
+  timer.remaining=timerLeft();
+  timer.running=false;
+  $('timerState').textContent='일시정지';
+  setTimerButtons();
+  updateTimers();
+});
+
+function finishTimer(manual=false){
+  if(timer.running){
+    timer.remaining=timerLeft();
+    timer.running=false;
+  }
+  const elapsed=Math.floor((timer.initial-timer.remaining)/60000);
+  if(elapsed>0)addRecord(timer.subject||$('timerSubject').value||'공부',elapsed);
+  if(!manual && timer.remaining<=0){
+    $('timerState').textContent='목표 달성!';
+    alert('타이머 종료! 수고했어 🎉');
+  } else if(manual) {
+    $('timerState').textContent='타이머 종료';
+  }
+  timer.remaining=timer.initial;
+  timer.started=0;
+  setTimerButtons();
+  updateTimers();
+  render();
+}
+
+$('stopTimer').addEventListener('click',()=>{
+  if(!confirm('타이머를 종료하고 지금까지 공부한 시간을 저장할까?'))return;
+  finishTimer(true);
+});
+
+$('timerHours').addEventListener('change',()=>{
+  if(!timer.running && timer.remaining===timer.initial){syncTimerInputs();updateTimers();setTimerButtons();}
+});
+
+$('timerMinutes').addEventListener('change',()=>{
+  if(!timer.running && timer.remaining===timer.initial){syncTimerInputs();updateTimers();setTimerButtons();}
+});
+
+$('todoForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const title=$('todoInput').value.trim();
+  if(!title)return;
+  todos.push({id:makeId(),title,done:false});
+  $('todoInput').value='';
+  save();
+  render();
+});
+
+function renderTodos(){
+  if(!todos.length){
+    $('todoList').innerHTML='<div class="empty">할 일을 추가해 봐!</div>';
+    return;
+  }
+  $('todoList').innerHTML=todos.map(t=>`
+    <div class="item">
+      <input class="check" type="checkbox" data-todo-check="${esc(t.id)}" ${t.done?'checked':''} aria-label="할 일 완료">
+      <div class="item-main"><div class="item-title" style="${t.done?'text-decoration:line-through;color:var(--muted)':''}">${esc(t.title)}</div></div>
+      <button class="chip" data-todo-delete="${esc(t.id)}">삭제</button>
+    </div>`).join('');
+}
+
+$('todoList').addEventListener('change',e=>{
+  const id=e.target.dataset.todoCheck;
+  if(!id)return;
+  const t=todos.find(t=>t.id===id);
+  if(!t)return;
+  t.done=e.target.checked;
+  if(t.done && !completed.some(c=>c.sourceId===id)){
+    completed.push({id:makeId(),sourceId:id,type:'할 일',title:t.title,date:today(),memo:''});
+  }
+  if(!t.done)completed=completed.filter(c=>c.sourceId!==id);
+  save();
+  render();
+});
+
+$('todoList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-todo-delete]');
+  if(!b)return;
+  todos=todos.filter(t=>t.id!==b.dataset.todoDelete);
+  completed=completed.filter(c=>c.sourceId!==b.dataset.todoDelete);
+  save();
+  render();
+});
+
+function partsDate(y,m,d){
+  if(!y||!m||!d)return '';
+  const date=new Date(Number(y),Number(m)-1,Number(d));
+  if(date.getFullYear()!==Number(y)||date.getMonth()!==Number(m)-1||date.getDate()!==Number(d))return '';
+  return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function dateParts(prefix,date){
+  const [y,m,d]=date.split('-');
+  $(prefix+'Year').value=Number(y);
+  $(prefix+'Month').value=Number(m);
+  $(prefix+'Day').value=Number(d);
+}
+
+dateParts('recordDate',today());
+$('recordDate').value=today();
+
+['examDateYear','examDateMonth','examDateDay'].forEach(id=>{
+  $(id).addEventListener('change',()=>{
+    $('examDate').value=partsDate($('examDateYear').value,$('examDateMonth').value,$('examDateDay').value);
+  });
+});
+
+$('examForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('examName').value.trim();
+  const date=partsDate($('examDateYear').value,$('examDateMonth').value,$('examDateDay').value);
+  if(!name||!date){alert('올바른 시험 날짜를 입력해 줘.');return;}
+  exams.push({id:makeId(),name,date});
+  save();
+  $('examForm').reset();
+  $('examDate').value='';
+  render();
+  alert('시험을 추가했어!');
+});
+
+function daysUntil(date){
+  const a=new Date(today()+'T00:00:00');
+  const b=new Date(date+'T00:00:00');
+  return Math.round((b-a)/86400000);
+}
+
+function movePastExams(){
+  const keep=[];
+  exams.forEach(x=>{
+    if(daysUntil(x.date)<0){
+      if(!completed.some(c=>c.sourceId===x.id)){
+        completed.push({id:makeId(),sourceId:x.id,type:'시험',title:x.name,date:x.date,memo:''});
+      }
+    } else keep.push(x);
+  });
+  if(keep.length!==exams.length){
+    exams=keep;
+    save();
+  }
+}
+
+function renderExams(){
+  if(!exams.length){
+    $('examList').innerHTML='<div class="empty">예정된 시험이 없어.</div>';
+    return;
+  }
+  $('examList').innerHTML=exams.sort((a,b)=>a.date.localeCompare(b.date)).map(x=>{
+    const n=daysUntil(x.date);
+    return `<div class="item"><div class="item-main"><div class="item-title">${esc(x.name)}</div><div class="item-meta">${esc(dateLabel(x.date))}</div></div><div class="item-time">${n===0?'D-Day':n>0?'D-'+n:'종료'}</div><button class="chip" data-exam-delete="${esc(x.id)}">삭제</button></div>`;
+  }).join('');
+}
+
+$('examList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-exam-delete]');
+  if(!b)return;
+  exams=exams.filter(x=>x.id!==b.dataset.examDelete);
+  save();
+  render();
+});
+
+function renderCompleted(){
+  if(!completed.length){
+    $('completedList').innerHTML='<div class="empty">완료한 항목이 여기에 모여.</div>';
+    return;
+  }
+  $('completedList').innerHTML=completed.map(c=>`
+    <details>
+      <summary>${esc(c.title)} <span class="small">· ${esc(c.type)} · ${esc(dateLabel(c.date))}</span></summary>
+      <div class="history-body">
+        <label for="memo-${esc(c.id)}">메모 / 소감</label>
+        <textarea class="memo-input" id="memo-${esc(c.id)}" data-memo="${esc(c.id)}" placeholder="오늘의 느낌이나 배운 점을 적어 봐">${esc(c.memo||'')}</textarea>
+        <div class="row" style="margin-top:8px">
+          <button type="button" class="primary" data-save-memo="${esc(c.id)}">메모 저장</button>
+          <button type="button" class="chip" data-delete-completed="${esc(c.id)}">기록 삭제</button>
+        </div>
+      </div>
+    </details>`).join('');
+}
+
+$('completedList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-save-memo]');
+  if(b){
+    const c=completed.find(x=>x.id===b.dataset.saveMemo);
+    if(c){
+      c.memo=$('memo-'+c.id).value;
+      save();
+      alert('메모를 저장했어!');
+    }
+    return;
+  }
+  const d=e.target.closest('[data-delete-completed]');
+  if(d){
+    completed=completed.filter(c=>c.id!==d.dataset.deleteCompleted);
+    save();
+    render();
+  }
+});
+
+$('filterSubject').addEventListener('change',render);
+$('filterMonth').addEventListener('change',render);
+
+$('clearFilters').addEventListener('click',()=>{
+  $('filterSubject').value='';
+  $('filterMonth').value='';
+  render();
+});
+
+function renderAllRecords(){
+  const subject=$('filterSubject').value,month=$('filterMonth').value;
+  const subjects=[...new Set(records.map(r=>r.subject))].sort();
+  $('filterSubject').innerHTML='<option value="">모든 과목</option>'+subjects.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+  if(subjects.includes(subject))$('filterSubject').value=subject;
+
+  let list=records.slice().sort((a,b)=>b.date.localeCompare(a.date)||(b.created||0)-(a.created||0));
+  if(subject)$('filterSubject').value=subject;
+  list=list.filter(r=>(!subject||r.subject===subject)&&(!month||r.date.startsWith(month)));
+
+  $('allTotal').textContent=mins(list.reduce((s,r)=>s+duration(r),0));
+  $('allDays').textContent=new Set(list.map(r=>r.date)).size+'일';
+  $('recordResultCount').textContent=list.length+'개 기록';
+  renderRecords(list,'allRecords');
+}
+
+function renderHomeRecords(){
+  const list=records.filter(r=>r.date===today()).sort((a,b)=>(b.created||0)-(a.created||0));
+  renderRecords(list,'homeRecords');
+}
+
+function renderCalendar(){
+  const cur=calendarMonth;
+  const y=cur.getFullYear(),m=cur.getMonth();
+  $('calendarTitle').textContent=`${y}년 ${m+1}월`;
+
+  const first=new Date(y,m,1).getDay(),count=new Date(y,m+1,0).getDate();
+  const names=['일','월','화','수','목','금','토'];
+  let html=names.map(n=>`<div class="weekday">${n}</div>`).join('');
+
+  for(let i=0;i<first;i++)html+='<div class="day blank"></div>';
+
+  for(let d=1;d<=count;d++){
+    const date=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const total=records.filter(r=>r.date===date).reduce((s,r)=>s+duration(r),0);
+    html+=`<button type="button" class="day ${date===today()?'today':''} ${date===selectedDate?'selected':''}" data-calendar-date="${date}"><span class="day-num">${d}</span>${total?`<span class="day-hours">${Math.floor(total/60)?Math.floor(total/60)+'h ':''}${total%60}m</span><span class="day-dot"></span>`:''}</button>`;
+  }
+
+  $('calendarGrid').innerHTML=html;
+  $('selectedDateTitle').textContent=dateLabel(selectedDate);
+  const list=records.filter(r=>r.date===selectedDate);
+  $('selectedDateTotal').textContent=mins(list.reduce((s,r)=>s+duration(r),0));
+  renderRecords(list,'selectedDateRecords',false);
+}
+
+let calendarMonth=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+let selectedDate=today();
+
+$('prevMonth').addEventListener('click',()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()-1);
+  renderCalendar();
+});
+
+$('nextMonth').addEventListener('click',()=>{
+  calendarMonth.setMonth(calendarMonth.getMonth()+1);
+  renderCalendar();
+});
+
+$('calendarGrid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-calendar-date]');
+  if(!b)return;
+  selectedDate=b.dataset.calendarDate;
+  renderCalendar();
+});
+
+function renderStats(){
+  const total=records.reduce((s,r)=>s+duration(r),0);
+  const days=new Set(records.map(r=>r.date)).size;
+
+  $('statTotal').textContent=mins(total);
+  $('statDays').textContent=days+'일';
+  $('statEntries').textContent=records.length+'개';
+  $('statAverage').textContent=mins(days?Math.round(total/days):0);
+
+  const map={};
+  records.forEach(r=>map[r.subject]=(map[r.subject]||0)+duration(r));
+  const arr=Object.entries(map).sort((a,b)=>b[1]-a[1]);
+
+  $('subjectStats').innerHTML=arr.length?arr.map(([name,n])=>`
+    <div class="bar-row">
+      <div class="bar-label"><span>${esc(name)}</span><strong>${mins(n)}</strong></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2,n/arr[0][1]*100)}%"></div></div>
+    </div>`).join(''):'<div class="empty">공부 기록을 추가하면 과목별 통계가 나와.</div>';
+
+  const week=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();
+    d.setDate(d.getDate()-i);
+    const date=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    week.push({date,label:`${d.getMonth()+1}/${d.getDate()}`,total:records.filter(r=>r.date===date).reduce((s,r)=>s+duration(r),0)});
+  }
+
+  const max=Math.max(1,...week.map(x=>x.total));
+  $('weeklyStats').innerHTML=week.map(x=>`
+    <div class="bar-row">
+      <div class="bar-label"><span>${x.label}</span><strong>${mins(x.total)}</strong></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${x.total/max*100}%"></div></div>
+    </div>`).join('');
+}
+
+function render(){
+  movePastExams();
+
+  const daily=records.filter(r=>r.date===today());
+  const total=daily.reduce((s,r)=>s+duration(r),0);
+
+  $('todayTotal').textContent=mins(total);
+  $('todayCount').textContent=daily.length+'개';
+  $('doneCount').textContent=todos.filter(t=>t.done).length+'개';
+
+  renderHomeRecords();
+  renderTodos();
+  renderExams();
+  renderCompleted();
+  renderAllRecords();
+  renderCalendar();
+  renderStats();
+}
+
+$('todayLabel').textContent=dateLabel(today());
+$('recordDate').value=today();
+dateParts('recordDate',today());
+
+/* 날짜가 바뀌었는지 확인하고 화면과 시험 기록을 갱신 */
+let lastCheckedDate=today();
+
+setInterval(()=>{
+  if(timer.running && timerLeft()<=0){
+    timer.remaining=0;
+    timer.running=false;
+    finishTimer(false);
+  } else {
+    updateTimers();
+  }
+
+  const currentDate=today();
+
+  if(currentDate!==lastCheckedDate){
+    lastCheckedDate=currentDate;
+
+    $('todayLabel').textContent=dateLabel(currentDate);
+    $('recordDate').value=currentDate;
+    dateParts('recordDate',currentDate);
+
+    selectedDate=currentDate;
+    calendarMonth=new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    );
+
+    movePastExams();
+    save();
+    render();
+  }
+},1000);
+
+setTimerButtons();
+updateSwButtons();
+render();
+</script>
+</body>
+</html>
